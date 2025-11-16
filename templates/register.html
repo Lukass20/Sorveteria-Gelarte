@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-            /* Certifique-se de que o nome do arquivo corresponde ao seu projeto */
             background-image: url('{{ url_for("static", filename="fundo-sorveteria.png") }}');
             background-size: cover;
             background-position: center;
@@ -31,7 +30,6 @@
             margin: 0 auto 1.5rem auto;
             display: block;
         }
-        /* Estilos para simular os botões de aba no topo do formulário */
         .tab-menu {
             display: flex;
             justify-content: center;
@@ -43,14 +41,14 @@
             padding: 0.5rem 1rem;
             font-size: 1rem;
             font-weight: 600;
-            color: #6b7280; /* cinza */
+            color: #6b7280; 
             transition: color 0.15s, border-bottom 0.15s;
         }
         .tab-button:hover {
-            color: #2563eb; /* azul */
+            color: #2563eb; 
         }
         .tab-active {
-            color: #2563eb; /* azul */
+            color: #2563eb; 
             border-bottom: 2px solid #2563eb;
         }
     </style>
@@ -132,8 +130,8 @@
                         name: form.username.value,
                         email: form.email.value,
                         password: password,
-                        cargo: 'A Definir', // Valores padrão
-                        setor: 'A Definir', // Valores padrão
+                        cargo: 'A Definir',
+                        setor: 'A Definir',
                         role: form.role.value
                     })
                 });
@@ -143,8 +141,7 @@
                 if (response.ok) {
                     messageElement.textContent = data.message;
                     messageElement.className = 'mt-4 text-center text-sm text-green-600 font-bold';
-                    form.reset(); // Limpa o formulário
-                    // Redireciona para login após o sucesso
+                    form.reset(); 
                     setTimeout(() => {
                         window.location.href = '{{ url_for("login") }}';
                     }, 1500); 

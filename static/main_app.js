@@ -1,10 +1,7 @@
-// --- Constantes e Estado Global ---
 const ROOT_DIV = document.getElementById('content-area'); 
 const USER_ROLE = 'ADMIN'; 
 const ALERT_THRESHOLD = 10;
 const CRITICAL_THRESHOLD = 3;
-
-// --- UTILS: Funções de Comunicação e Helpers ---
 
 const apiFetch = async (url, options = {}) => {
     const defaultHeaders = {'Content-Type': 'application/json'};
@@ -38,7 +35,7 @@ const navigateTo = (view, extra = {}) => {
     if (extra.id) {
         hash += `/${extra.id}`;
     }
-    // Dispara o evento hashchange, que chama o router
+
     window.location.hash = hash; 
     if (document.readyState === 'complete') {
         router();
@@ -53,9 +50,6 @@ const setBgImage = (isDashboard) => {
     }
 }
 
-// --- FUNÇÕES DE UI / ROTEAMENTO DA BARRA HORIZONTAL ---
-
-// Define as cores dos botões para saber qual classe remover/adicionar
 const routeColors = {
     'home': 'bg-pink-500', 
     'dashboard': 'bg-blue-500', 
@@ -67,30 +61,21 @@ const routeColors = {
 };
 
 const setActiveNavButton = (activeRoute) => {
-    // 1. Remove a cor ativa de todos e restaura a cor original
     document.querySelectorAll('.nav-button[data-route]').forEach(btn => {
         const route = btn.getAttribute('data-route');
         
-        // Remove classes de ativação e hover genéricas
         btn.classList.remove('bg-opacity-80', 'hover:bg-opacity-80'); 
         
-        // Remove a cor ativa atual e restaura a cor de hover original
         if (routeColors[route]) {
-            // Garante que o hover original seja restaurado (ex: hover:bg-green-600)
             btn.className = btn.className.replace(/hover:bg-opacity-\d+/g, `hover:${routeColors[route].replace('500', '600')}`);
         }
     });
 
-    // 2. Aplica o estado ativo no botão correto
     const activeButton = document.querySelector(`.nav-button[data-route="${activeRoute}"]`);
     if (activeButton) {
-        // Aplica o estado visual de 'ativo' (ex: levemente mais escuro)
         activeButton.classList.add('bg-opacity-80', 'hover:bg-opacity-80');
-        
-        // Remove a classe de hover escura para que o hover não mude (já está no estado ativo)
         const originalColor = routeColors[activeRoute];
         if (originalColor) {
-             // Remove a classe de hover escura ex: hover:bg-blue-600
              activeButton.className = activeButton.className.replace(/hover:bg-\w+-\d+/g, 'hover:bg-opacity-80');
         }
     }
@@ -107,14 +92,8 @@ const handleLogout = async () => {
     }
 };
 
-// --- VIEWS (Funções que Renderizam as Telas) ---
-
-/**
- * SIMULAÇÃO DE DADOS PARA VENDAS (PDV)
- */
 const getProductsForSale = async () => {
-    // Simulação de produtos disponíveis para venda
-    await new Promise(resolve => setTimeout(resolve, 300)); // Simula delay da API
+    await new Promise(resolve => setTimeout(resolve, 300));
     return [
         { id: 101, name: 'Sorvete Baunilha (Litro)', price: 22.50, category: 'Sorvetes' },
         { id: 102, name: 'Sorvete Morango (Litro)', price: 23.90, category: 'Sorvetes' },
@@ -128,15 +107,8 @@ const getProductsForSale = async () => {
     ];
 };
 
-/**
- * ESTADO DO CARRINHO (Variável global apenas para esta View)
- */
 let carrinho = [];
-let todosProdutos = []; // Armazenará a lista completa de produtos
-
-/**
- * FUNÇÕES AUXILIARES DO PDV
- */
+let todosProdutos = [];
 
 const addToCart = (productId) => {
     const product = todosProdutos.find(p => p.id === productId);
@@ -157,7 +129,7 @@ const updateItemQuantity = (productId, newQuantity) => {
 
     if (existingItemIndex > -1) {
         if (newQuantity <= 0) {
-            carrinho.splice(existingItemIndex, 1); // Remove se a quantidade for zero ou menor
+            carrinho.splice(existingItemIndex, 1); 
         } else {
             carrinho[existingItemIndex].quantity = newQuantity;
         }
@@ -178,7 +150,7 @@ const updateCartDisplay = () => {
     const cartList = document.getElementById('cart-list');
     const cartTotal = document.getElementById('cart-total');
 
-    if (!cartList || !cartTotal) return; // Garante que a DOM está carregada
+    if (!cartList || !cartTotal) return;
 
     let cartHTML = '';
     if (carrinho.length === 0) {
@@ -210,7 +182,6 @@ const updateCartDisplay = () => {
     cartList.innerHTML = cartHTML;
     cartTotal.textContent = formatCurrency(calculateTotal());
 
-    // Habilita/desabilita o botão de finalizar venda
     const btnFinalizar = document.getElementById('btn-finalizar-venda');
     if (btnFinalizar) {
         btnFinalizar.disabled = carrinho.length === 0;
@@ -228,25 +199,21 @@ const handleFinalizarVenda = async () => {
     if (!confirm(`Confirmar venda no valor total de ${formatCurrency(calculateTotal())}?`)) return;
 
     try {
-        // Objeto de dados para envio (simulação)
         const saleData = {
             items: carrinho.map(item => ({ 
                 product_id: item.id, 
                 quantity: item.quantity, 
-                price_sold: item.price // Preço unitário da venda
+                price_sold: item.price 
             })),
             total_amount: calculateTotal()
         };
 
         console.log("Dados da Venda Enviados:", saleData);
 
-        // --- CHAMADA API REAL (Simulada) ---
-        // const result = await apiFetch('/api/vendas', { method: 'POST', body: JSON.stringify(saleData) });
-
         alert(`Venda de ${formatCurrency(saleData.total_amount)} registrada com sucesso!`);
-        carrinho = []; // Limpa o carrinho
+        carrinho = []; 
         updateCartDisplay();
-        navigateTo('home'); // Volta para a tela inicial
+        navigateTo('home'); 
         
     } catch (e) {
         console.error("Erro ao registrar venda:", e.message);
@@ -254,20 +221,15 @@ const handleFinalizarVenda = async () => {
     }
 };
 
-/**
- * RENDERIZAÇÃO REGISTRAR NOVA VENDA (PDV)
- */
 const renderRegistrarVenda = async () => {
     setActiveNavButton('registrar_venda');
     setBgImage(false);
     ROOT_DIV.innerHTML = '<div class="p-6 bg-white rounded-lg shadow-md col-span-2"><i class="fas fa-spinner fa-spin text-2xl text-green-500"></i> Carregando PDV e produtos...</div>';
 
     try {
-        // Zera o carrinho ao iniciar a tela (ou carrega de um estado salvo, se houvesse)
         carrinho = []; 
         todosProdutos = await getProductsForSale();
 
-        // Agrupar produtos por categoria
         const groupedProducts = todosProdutos.reduce((acc, product) => {
             (acc[product.category] = acc[product.category] || []).push(product);
             return acc;
@@ -297,7 +259,6 @@ const renderRegistrarVenda = async () => {
                 </div>
             `;
         }
-
 
         ROOT_DIV.innerHTML = `
             <div class="grid grid-cols-3 gap-6 h-full p-4">
@@ -333,7 +294,7 @@ const renderRegistrarVenda = async () => {
 
             </div>
         `;
-        // Garante que o display inicial do carrinho seja renderizado (vazio)
+    
         updateCartDisplay(); 
 
     } catch (e) {
@@ -342,20 +303,17 @@ const renderRegistrarVenda = async () => {
 };
 
 const renderUsuarios = async () => {
-    // 1. Define o botão ativo na barra de navegação
     setActiveNavButton('usuarios'); 
-    setBgImage(false); // Remove imagem de fundo para telas com tabelas/formulários
+    setBgImage(false); 
 
     ROOT_DIV.innerHTML = '<div class="p-6 bg-white rounded-lg shadow-md"><i class="fas fa-spinner fa-spin text-2xl text-gray-500"></i> Carregando Gerenciamento de Usuários...</div>';
 
     try {
-        // --- SIMULAÇÃO DE DADOS (Substitua por apiFetch('/api/usuarios') real) ---
         const usersData = [
             { id: 1, name: 'Admin Padrão', email: 'admin@gelarte.com', access_type: 'Administrador', created_at: '2023-01-01' },
             { id: 2, name: 'Maria Oliveira', email: 'maria.o@gelarte.com', access_type: 'Vendedor', created_at: '2024-03-10' },
             { id: 3, name: 'João Silva', email: 'joao.s@gelarte.com', access_type: 'Vendedor', created_at: '2024-05-20' },
         ];
-        // ----------------------------------------------------------------------
 
         const userRows = usersData.map(user => `
             <tr class="hover:bg-gray-50">
@@ -414,29 +372,22 @@ const renderUsuarios = async () => {
     }
 };
 
-// ... (Você também precisará criar as funções de ação: editUser e deleteUser) ...
 const editUser = (userId) => {
-    // Implemente a navegação para a tela de edição do usuário
     navigateTo('cadastrar_usuario', { id: userId });
 };
 
 const deleteUser = async (userId) => {
     if (!confirm(`Tem certeza que deseja EXCLUIR o usuário #${userId}?`)) return;
     try {
-        // await apiFetch(`/api/usuarios/${userId}`, { method: 'DELETE' }); // CHAMADA API REAL
         console.log(`Usuário ${userId} excluído (simulação).`);
-        renderUsuarios(); // Recarrega a lista
+        renderUsuarios();
         alert('Usuário excluído com sucesso!');
     } catch (e) {
         alert("Erro ao excluir usuário: " + e.message);
     }
 };
 
-/**
- * RENDERIZAÇÃO DO DASHBOARD (VISÃO GRÁFICA)
- */
 const setupCharts = (estoqueData, vendasData, topVendasData, movimentacaoData) => {
-    // Gráfico de Estoque (Rosca)
     const ctxEstoque = document.getElementById('estoqueChart');
     if (ctxEstoque) {
         new Chart(ctxEstoque, { 
@@ -446,7 +397,6 @@ const setupCharts = (estoqueData, vendasData, topVendasData, movimentacaoData) =
         });
     }
 
-    // Gráfico de Vendas (Linha/Barra)
     const ctxVendas = document.getElementById('vendasChart');
     if (ctxVendas) {
         new Chart(ctxVendas, {
@@ -463,7 +413,6 @@ const setupCharts = (estoqueData, vendasData, topVendasData, movimentacaoData) =
         });
     }
 
-    // Gráfico Top Vendas (Barra Horizontal)
     const ctxTopVendas = document.getElementById('topVendasChart');
     if (ctxTopVendas) {
         new Chart(ctxTopVendas, { 
@@ -473,7 +422,6 @@ const setupCharts = (estoqueData, vendasData, topVendasData, movimentacaoData) =
         });
     }
 
-    // Gráfico Movimentação (Linha)
     const ctxMovimentacao = document.getElementById('movimentacaoChart');
     if (ctxMovimentacao) {
         new Chart(ctxMovimentacao, { 
@@ -486,11 +434,10 @@ const setupCharts = (estoqueData, vendasData, topVendasData, movimentacaoData) =
 
 const renderDashboard = async () => {
     setActiveNavButton('dashboard');
-    setBgImage(true); // Manter imagem de fundo para o Dashboard (Gráficos)
+    setBgImage(true);
     ROOT_DIV.innerHTML = '<div class="p-6 bg-white rounded-lg shadow-md"><i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i> Gerando gráficos de desempenho...</div>';
 
     try {
-        // --- SIMULAÇÃO DE DADOS PARA GRÁFICOS ---
         const estoqueData = {
             labels: ['Sorvetes', 'Coberturas', 'Descartáveis'],
             datasets: [{
@@ -535,7 +482,6 @@ const renderDashboard = async () => {
                 { label: 'Saídas', data: [150, 250, 180, 280], borderColor: '#EF4444', backgroundColor: 'rgba(239, 68, 68, 0.2)', fill: true }
             ]
         };
-        // --------------------------------------------------------
 
         ROOT_DIV.innerHTML = `
             <div class="p-6 bg-white rounded-lg shadow-xl">
@@ -577,16 +523,12 @@ const renderDashboard = async () => {
     }
 };
 
-/**
- * RENDERIZAÇÃO DA TELA INÍCIO (VISÃO TÁTICA / METRICAS)
- */
 const renderHome = async () => {
     setActiveNavButton('home');
-    setBgImage(true); // Mantém a imagem de fundo para o Início/Home
+    setBgImage(true); 
     ROOT_DIV.innerHTML = '<div class="p-6 bg-white rounded-lg shadow-md"><i class="fas fa-spinner fa-spin text-2xl text-pink-500"></i> Carregando visão tática...</div>';
     
     try {
-        // --- SIMULAÇÃO DE DADOS (Substitua por apiFetch real) ---
         const stats = {
             total_produtos_estoque: 37,
             total_vendas_mes: 165.00,
@@ -599,13 +541,10 @@ const renderHome = async () => {
             { id: 3, name: 'Copo Descartável', quantity: 2, type: 'Insumo', avg_sale: 10 },
             { id: 4, name: 'Sorvete Baunilha', quantity: 12, type: 'Sorvete', avg_sale: 5 }
         ]; 
-        // --------------------------------------------------------
         
-        // Filtra e prepara dados para a lista de alerta (apenas itens abaixo do ALERT_THRESHOLD)
         const lowStockAlerts = products.filter(p => p.quantity <= ALERT_THRESHOLD);
 
         const alertRows = lowStockAlerts.map(p => {
-            // Nota: ALERT_THRESHOLD e CRITICAL_THRESHOLD devem ser definidos como constantes globais.
             const statusClass = p.quantity <= CRITICAL_THRESHOLD ? 'bg-red-200 border-red-400' : 'bg-yellow-100 border-yellow-300';
             const textColor = p.quantity <= CRITICAL_THRESHOLD ? 'text-red-800' : 'text-yellow-800';
 
@@ -662,16 +601,12 @@ const renderHome = async () => {
     }
 };
 
-/**
- * RENDERIZAÇÃO DE RELATÓRIOS (TABELAS DE ESTOQUE/MOVIMENTAÇÃO)
- */
 const renderRelatorios = async () => {
     setActiveNavButton('relatorios');
     setBgImage(false); 
     ROOT_DIV.innerHTML = '<div class="p-6 bg-white rounded-lg shadow-md"><i class="fas fa-spinner fa-spin text-2xl text-blue-500"></i> Carregando relatórios gerenciais...</div>';
     
     try {
-        // ... (Lógica de simulação de dados de relatórios e tabelas) ...
         const productsData = [
              { name: 'Sorvete de Morango', category: 'Sorvetes', quantity: 12, last_in: '+100 (10/05)', last_out: '-5 (Hoje)', is_critical: false },
              { name: 'Copo Descartável 300ml', category: 'Descartáveis', quantity: 2, last_in: '+500 (01/05)', last_out: '-15 (Hoje)', is_critical: true },
@@ -757,7 +692,6 @@ const renderRelatorios = async () => {
 const renderCadastrarProduto = (id) => {
     setActiveNavButton('cadastrar_produto');
     setBgImage(false);
-    // Conteúdo HTML para cadastro/edição
     ROOT_DIV.innerHTML = `
         <div class="p-6 bg-white rounded-lg shadow-md" style="max-width: 800px; margin: 0 auto;">
             <header class="border-b-2 border-yellow-400 pb-3 mb-6">
@@ -811,11 +745,10 @@ const renderRegistrarEntrada = async (id = null) => {
     setBgImage(false);
     ROOT_DIV.innerHTML = '<div class="p-6 bg-white rounded-lg shadow-md"><i class="fas fa-spinner fa-spin text-2xl text-yellow-600"></i> Carregando produtos...</div>';
     
-    // Simulação de produtos
     const products = [
         { id: 1, name: 'Sorvete Baunilha', quantity: 15 },
-        { id: 2, name: 'Picolé Limão', quantity: 8 }, // Baixo estoque
-        { id: 3, name: 'Copo Descartável', quantity: 2 }, // Crítico
+        { id: 2, name: 'Picolé Limão', quantity: 8 },
+        { id: 3, name: 'Copo Descartável', quantity: 2 },
     ];
     
     try {
@@ -825,7 +758,6 @@ const renderRegistrarEntrada = async (id = null) => {
             </option>
         `).join('');
 
-        // Adiciona a opção padrão se nenhum ID foi pré-selecionado
         if (!id) {
              options = `<option value="">-- Selecione um produto --</option>` + options;
         }
@@ -877,10 +809,8 @@ const handleReposicaoSubmit = async (form) => {
     }
 
     try {
-        // Simulação de sucesso
-        // const result = await apiFetch('/api/reposicao', { method: 'POST', body: JSON.stringify({ id: product_id, quantity: quantity }) });
         alert('Reposição registrada com sucesso! (Simulação)');
-        navigateTo('home'); // Redireciona para o Início/Alertas após sucesso
+        navigateTo('home'); 
     } catch (e) {
         console.error("Erro ao registrar reposição:", e.message);
         alert("Erro ao registrar reposição: " + e.message);
@@ -902,16 +832,12 @@ const renderGerenciarUsuarios = () => {
     `;
 };
 
-// --- ROTAS (ROUTER) ---
-
 const router = () => {
-    // Rota padrão agora é 'home'
     const hash = window.location.hash.substring(1) || 'home'; 
     const urlParts = hash.split('/');
     const viewName = urlParts[0];
     const id = urlParts[1];
     
-    // Mapeamento de rotas para funções de renderização
     const routesMap = {
         'home': renderHome, 
         'dashboard': renderDashboard, 
@@ -936,9 +862,7 @@ const router = () => {
     }
 };
 
-// --- INICIALIZAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Configura os ouvintes de clique para os botões de navegação na barra fixa
     document.querySelectorAll('.nav-button[data-route]').forEach(button => {
         button.addEventListener('click', (e) => {
             const route = e.currentTarget.getAttribute('data-route');
@@ -946,12 +870,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 2. Configura o botão de Logout
     document.getElementById('logout-button').addEventListener('click', handleLogout);
-    
-    // 3. Roteador: Escuta mudanças na URL e chama a função de renderização
     window.addEventListener('hashchange', router);
-
-    // 4. Renderiza a view inicial
     router();
 });

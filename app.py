@@ -1,24 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash # Para segurança de senhas
+from werkzeug.security import generate_password_hash, check_password_hash 
 from datetime import datetime, timedelta
 
-# --- Configuração do App ---
 app = Flask(__name__)
-# É crucial que esta chave seja definida!
 app.secret_key = 'sua_chave_secreta_muito_segura' 
 
-# Configuração do Banco de Dados SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gelarte.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- Modelo do Banco de Dados (Tabela de Usuários) ---
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False) # Armazenamos o HASH, não a senha!
+    password_hash = db.Column(db.String(128), nullable=False) 
     role = db.Column(db.String(20), default='USER')
     cargo = db.Column(db.String(50), default='A Definir')
     setor = db.Column(db.String(50), default='A Definir')
@@ -31,10 +27,8 @@ class User(db.Model):
         """Verifica a senha usando o hash."""
         return check_password_hash(self.password_hash, password)
 
-# --- Criação Inicial do Banco de Dados e Usuário Admin ---
 def create_tables():
     db.create_all()
-    # Adiciona um ADMIN inicial se o banco estiver vazio
     if not User.query.filter_by(email='admin@gelarte.com').first():
         admin = User(name='Lukas Admin', email='admin@gelarte.com', role='ADMIN', cargo='Gerente', setor='Administrativo')
         admin.set_password('admin')
@@ -42,8 +36,6 @@ def create_tables():
         db.session.commit()
         print("Usuário Admin inicial criado (admin@gelarte.com / admin).")
 
-
-# --- Dados de Mock (MOCK_USERS foi removido, mantendo apenas PRODUTOS e VENDAS) ---
 MOCK_PRODUCTS = [
     {'id': 'PROD001', 'name': 'Sorvete de Chocolate', 'type': 'Sorvete', 'expiration_date': '2025-12-12', 'quantity': 7, 'cost': 9.00, 'price': 23.00},
     {'id': 'PROD002', 'name': 'Cobertura de Morango', 'type': 'Cobertura', 'expiration_date': '2025-12-12', 'quantity': 5, 'cost': 10.00, 'price': 22.00},
@@ -54,15 +46,12 @@ MOCK_SALES = [
     {'id': 'VENDA002', 'date': '2025-10-05', 'product_id': 'PROD003', 'product_name': 'Picole Frutas Tropicais', 'quantity': 10, 'total': 50.00, 'type': 'Picole'},
 ]
 
-
-# --- Funções de Utilitários (Atualizadas para usar o Banco de Dados) ---
 def get_user_by_email(email):
     """Busca usuário pelo e-mail no banco de dados."""
     return User.query.filter_by(email=email).first()
 
 def get_user_by_id(user_id):
     """Busca usuário pelo ID no banco de dados."""
-    # O user_id na sessão é um ID de BD (Integer), que o User.query.get busca diretamente
     return User.query.get(user_id) 
 
 def get_product_by_id(product_id):
@@ -91,8 +80,6 @@ def calculate_dashboard_data(products, sales):
         'estoque_por_tipo': estoque_por_tipo
     }
 
-
-# --- DECORATORS (AUTENTICAÇÃO) ---
 def login_required_api(f):
     """Decorator para exigir login em rotas API."""
     def wrap(*args, **kwargs):
@@ -113,10 +100,6 @@ def admin_required_api(f):
     wrap.__name__ = f.__name__
     return wrap
 
-# =========================================================================
-#                          ROTAS DE INTERFACE (HTML)
-# =========================================================================
-
 @app.route('/login', methods=['GET'])
 def login():
     """Rota que renderiza o HTML de login."""
@@ -136,17 +119,9 @@ def index():
     """Rota que renderiza o único HTML de container SPA."""
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
-    # Busca o papel do usuário logado no BD
     user = get_user_by_id(session.get('user_id'))
     user_role = user.role if user else 'USER' 
-    
-    # Passa dados da sessão para o JS (via template) configurar o menu
     return render_template('index.html', user_role=user_role)
-
-# =========================================================================
-#                             ROTAS DE AUTENTICAÇÃO (API)
-# =========================================================================
 
 @app.route('/api/auth/login', methods=['POST'])
 def api_login():
@@ -156,8 +131,6 @@ def api_login():
     password = data.get('password')
     
     user = get_user_by_email(email)
-    
-    # Verifica o usuário e a senha usando o hash
     if user and user.check_password(password): 
         session['user_id'] = user.id
         session['role'] = user.role
@@ -178,7 +151,7 @@ def api_register():
         return jsonify({'error': 'Este e-mail já está em uso.'}), 400
         
     new_user = User(name=name, email=email, role=role)
-    new_user.set_password(password) # Criptografa a senha!
+    new_user.set_password(password)
     
     db.session.add(new_user)
     db.session.commit()
@@ -192,10 +165,6 @@ def api_logout():
     session.pop('user_id', None)
     session.pop('role', None)
     return jsonify({'message': 'Logout realizado com sucesso.'}), 200
-
-# =========================================================================
-#                               ROTAS DE DADOS (API)
-# =========================================================================
 
 @app.route('/api/dashboard', methods=['GET'])
 @login_required_api
@@ -247,7 +216,6 @@ def api_reposicao():
 @admin_required_api
 def api_users():
     """Retorna todos os usuários (Admin Only) para a tela de gerenciamento."""
-    # Retorna os usuários do banco de dados (excluindo o hash da senha, por segurança)
     users = User.query.all()
     user_list = [{
         'id': u.id,
@@ -258,7 +226,6 @@ def api_users():
         'setor': u.setor
     } for u in users]
     return jsonify({'users': user_list}), 200
-
 
 @app.route('/api/user_info', methods=['GET'])
 @login_required_api
@@ -277,5 +244,5 @@ def api_user_info():
 if __name__ == '__main__':
     with app.app_context():
         create_tables()
-        
+
     app.run(debug=True)

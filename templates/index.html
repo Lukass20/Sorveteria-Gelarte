@@ -8,27 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* Ajuste o preenchimento para que o conteúdo não fique sob o cabeçalho fixo */
         body {
-            padding-top: 64px; /* Altura do cabeçalho */
-            background-color: #f3f4f6; /* Fundo levemente cinza */
+            padding-top: 64px;
+            background-color: #f3f4f6;
         }
-        /* Estilo para a imagem de fundo (usada quando o dashboard está carregado) */
         .content-area {
             background-image: url('{{ url_for("static", filename="fundo-sorveteria.png") }}');
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
-            min-height: calc(100vh - 64px); /* Altura da tela menos o cabeçalho */
+            min-height: calc(100vh - 64px);
             padding: 2rem;
         }
-        /* Estilo para botões de navegação no topo: TAMANHO MÉDIO */
+    
         .nav-button {
             transition: all 0.2s;
             white-space: nowrap;
-            /* Usando padding para um tamanho médio */
-            padding: 0.3rem 0.6rem; /* ~py-1 e px-3 */
-            font-size: 0.875rem; /* Um pouco maior que text-sm */
+            padding: 0.3rem 0.6rem; 
+            font-size: 0.875rem;
         }
         .nav-button:hover {
             opacity: 0.9;
