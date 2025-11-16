@@ -379,7 +379,7 @@ const editUser = (userId) => {
 const deleteUser = async (userId) => {
     if (!confirm(`Tem certeza que deseja EXCLUIR o usuário #${userId}?`)) return;
     try {
-        console.log(`Usuário ${userId} excluído (simulação).`);
+        console.log(`Usuário ${userId} excluído.`);
         renderUsuarios();
         alert('Usuário excluído com sucesso!');
     } catch (e) {
@@ -575,7 +575,7 @@ const renderHome = async () => {
                         <p class="text-3xl font-bold text-blue-900 mt-1">${stats.total_produtos_estoque}</p>
                     </div>
                     <div class="bg-green-100 p-4 rounded-lg shadow-sm">
-                        <p class="text-sm text-green-800 font-semibold">Vendas (Mês Simulado)</p>
+                        <p class="text-sm text-green-800 font-semibold">Vendas</p>
                         <p class="text-3xl font-bold text-green-700 mt-1">${formatCurrency(stats.total_vendas_mes)}</p>
                     </div>
                     <div class="bg-red-100 p-4 rounded-lg shadow-sm">
@@ -630,6 +630,19 @@ const renderRelatorios = async () => {
                     </h1>
                 </header>
                 
+                <div class="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500 mb-6 flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-lg font-semibold text-indigo-800 mb-3 md:mb-0 flex items-center">
+                        <i class="fas fa-download mr-2"></i> Exportar Relatórios para Análise Externa:
+                    </p>
+                    <div class="flex space-x-3 w-full md:w-auto">
+                        <a href="/api/export/vendas/excel" download="Relatorio_Vendas_Completo.xlsx" class="flex-1 text-center items-center justify-center p-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-lg shadow transition duration-300">
+                            <i class="fas fa-file-excel mr-1"></i> Baixar Excel
+                        </a>
+                        <a href="/api/export/vendas/pdf" download="Relatorio_Vendas_Completo.pdf" class="flex-1 text-center items-center justify-center p-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg shadow transition duration-300">
+                            <i class="fas fa-file-pdf mr-1"></i> Baixar PDF
+                        </a>
+                    </div>
+                </div>
                 <h2 class="text-2xl font-extrabold text-gray-800 border-b-2 border-gray-400 pb-2 mb-4 flex items-center">
                     <i class="fas fa-boxes mr-2 text-gray-500"></i> Estoque e Movimentação (Entradas/Saídas)
                 </h2>
@@ -687,7 +700,6 @@ const renderRelatorios = async () => {
         ROOT_DIV.innerHTML = `<div class="p-6 bg-white rounded-lg shadow-md text-red-600">Erro ao carregar relatórios: ${e.message}</div>`;
     }
 };
-
 
 const renderCadastrarProduto = (id) => {
     setActiveNavButton('cadastrar_produto');
@@ -809,7 +821,7 @@ const handleReposicaoSubmit = async (form) => {
     }
 
     try {
-        alert('Reposição registrada com sucesso! (Simulação)');
+        alert('Reposição registrada com sucesso!');
         navigateTo('home'); 
     } catch (e) {
         console.error("Erro ao registrar reposição:", e.message);

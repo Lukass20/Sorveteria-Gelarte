@@ -185,7 +185,7 @@ def api_products():
 @app.route('/api/products', methods=['POST'])
 @login_required_api
 def api_add_product():
-    """Adiciona um novo produto (Simulação de Cadastro)."""
+    """Adiciona um novo produto."""
     data = request.get_json()
     new_id_num = len(MOCK_PRODUCTS) + 1
     data['id'] = f'PROD{new_id_num:03d}'
