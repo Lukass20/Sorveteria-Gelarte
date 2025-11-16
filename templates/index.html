@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelarte Sorveteria | Gerenciamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Ajuste o preenchimento para que o conteúdo não fique sob o cabeçalho fixo */
+        body {
+            padding-top: 64px; /* Altura do cabeçalho */
+            background-color: #f3f4f6; /* Fundo levemente cinza */
+        }
+        /* Estilo para a imagem de fundo (usada quando o dashboard está carregado) */
+        .content-area {
+            background-image: url('{{ url_for("static", filename="fundo-sorveteria.png") }}');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            min-height: calc(100vh - 64px); /* Altura da tela menos o cabeçalho */
+            padding: 2rem;
+        }
+        /* Estilo para botões de navegação no topo: TAMANHO MÉDIO */
+        .nav-button {
+            transition: all 0.2s;
+            white-space: nowrap;
+            /* Usando padding para um tamanho médio */
+            padding: 0.3rem 0.6rem; /* ~py-1 e px-3 */
+            font-size: 0.875rem; /* Um pouco maior que text-sm */
+        }
+        .nav-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="fixed top-0 left-0 right-0 h-16 bg-white shadow-md z-10 flex items-center justify-between px-6">
+    
+        <div class="flex items-center flex-shrink-0">
+            <i class="fas fa-ice-cream text-pink-500 text-xl mr-3"></i>
+            <h1 class="text-xl font-bold text-gray-800">Gelarte Sorveteria | Controle de Estoque</h1>
+            <span class="ml-4 text-sm text-gray-500 font-medium">({{ user_role }})</span>
+        </div>
+
+        <nav class="flex items-center space-x-2"> 
+        
+            <button data-route="home" class="nav-button bg-pink-500 text-white rounded-md font-semibold hover:bg-pink-600">
+                <i class="fas fa-home mr-1"></i> Início
+            </button>
+
+            <button data-route="dashboard" class="nav-button bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600">
+                <i class="fas fa-chart-line mr-1"></i> Dashboard
+            </button>
+        
+            <button data-route="registrar_venda" class="nav-button bg-green-500 text-white rounded-md font-semibold hover:bg-green-600">
+                <i class="fas fa-shopping-cart mr-1"></i> Registrar Venda
+            </button>
+            <button data-route="registrar_entrada" class="nav-button bg-yellow-600 text-white rounded-md font-semibold hover:bg-yellow-700">
+                <i class="fas fa-truck-loading mr-1"></i> Registrar Entrada
+            </button>
+            <button data-route="cadastrar_produto" class="nav-button bg-yellow-400 text-gray-800 rounded-md font-semibold hover:bg-yellow-500">
+                <i class="fas fa-plus-circle mr-1"></i> Cadastrar Produto
+            </button>
+            
+            <button data-route="relatorios" class="nav-button bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600">
+                <i class="fas fa-chart-bar mr-1"></i> Relatórios
+            </button>
+
+            {% if user_role == 'ADMIN' %}
+            <button data-route="usuarios" class="nav-button bg-gray-500 text-white rounded-md font-semibold hover:bg-gray-600">
+                <i class="fas fa-users mr-1"></i> Usuários
+            </button>
+            {% endif %}
+
+            <button id="logout-button" class="nav-button bg-red-500 text-white rounded-md font-semibold hover:bg-red-600">
+                <i class="fas fa-sign-out-alt mr-1"></i> Sair
+            </button>
+        </nav>
+    
+    </header>
+
+    <main class="main-content">
+        <div id="content-area" class="content-area rounded-xl shadow-lg">
+            </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="{{ url_for('static', filename='main_app.js') }}"></script>
+</body>
+</html>

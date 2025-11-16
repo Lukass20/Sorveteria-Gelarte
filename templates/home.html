@@ -1,0 +1,64 @@
+<div class="p-6">
+
+    <div class="flex justify-between items-center mb-6 border-b pb-3">
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-home text-pink-500 mr-3"></i> Início: Visão Rápida e Tática
+        </h2>
+        <button data-route="dashboard" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-300">
+            <i class="fas fa-chart-line mr-1"></i> Ir para o Dashboard de Desempenho
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        
+        <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-blue-500">
+            <p class="text-sm font-medium text-gray-500">Total de Produtos em Estoque</p>
+            <p id="metric-estoque-total" class="text-4xl font-extrabold text-blue-800 mt-1">
+                37 
+            </p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-green-500">
+            <p class="text-sm font-medium text-gray-500">Vendas (Mês)</p>
+            <p id="metric-vendas-mes" class="text-4xl font-extrabold text-green-700 mt-1">
+                R$ 165,00
+            </p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-lg border-l-4 border-red-500">
+            <p class="text-sm font-medium text-gray-500">Alertas de Estoque Baixo (Ação Urgente)</p>
+            <p id="metric-alertas-baixo" class="text-4xl font-extrabold text-red-600 mt-1">
+                3
+            </p>
+        </div>
+    </div>
+
+    <div class="bg-red-50 p-6 rounded-xl shadow-lg">
+        <h3 class="text-xl font-bold text-red-800 flex items-center mb-4">
+            <i class="fas fa-exclamation-triangle mr-2"></i> Itens Críticos: Reposição Imediata
+        </h3>
+        
+        <div id="critial-items-list">
+            <div class="flex justify-between items-center py-2 border-b last:border-b-0 bg-yellow-100 px-3 rounded-md mb-1">
+                <span class="font-medium text-gray-800">Picolé Limão</span>
+                <span class="text-sm text-red-600 font-semibold">Qtd: 8</span>
+                <button data-route="registrar_entrada" class="bg-blue-500 hover:bg-blue-600 text-white text-sm py-1 px-3 rounded">Repor</button>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b last:border-b-0 bg-yellow-100 px-3 rounded-md mb-1">
+                <span class="font-medium text-gray-800">Casquinha</span>
+                <span class="text-sm text-red-600 font-semibold">Qtd: 4</span>
+                <button data-route="registrar_entrada" class="bg-blue-500 hover:bg-blue-600 text-white text-sm py-1 px-3 rounded">Repor</button>
+            </div>
+            <div class="flex justify-between items-center py-2 last:border-b-0 bg-yellow-100 px-3 rounded-md">
+                <span class="font-medium text-gray-800">Copo Descartável</span>
+                <span class="text-sm text-red-600 font-semibold">Qtd: 2</span>
+                <button data-route="registrar_entrada" class="bg-blue-500 hover:bg-blue-600 text-white text-sm py-1 px-3 rounded">Repor</button>
+            <div class="flex justify-between items-center py-2 last:border-b-0 bg-yellow-100 px-3 rounded-md">
+                <span class="font-medium text-gray-800">Sorvete de Chocolate</span>
+                <span class="text-sm text-red-600 font-semibold">Qtd: 7</span>
+                <button data-route="registrar_entrada" class="bg-blue-500 hover:bg-blue-600 text-white text-sm py-1 px-3 rounded">Repor</button>
+            </div>
+        </div>
+    </div>
+
+</div>

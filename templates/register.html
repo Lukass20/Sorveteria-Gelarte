@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Gelarte Sorveteria</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            /* Certifique-se de que o nome do arquivo corresponde ao seu projeto */
+            background-image: url('{{ url_for("static", filename="fundo-sorveteria.png") }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: #f3f4f6;
+        }
+        .register-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+        }
+        .gelarte-logo {
+            max-width: 180px;
+            height: auto;
+            margin: 0 auto 1.5rem auto;
+            display: block;
+        }
+        /* Estilos para simular os botões de aba no topo do formulário */
+        .tab-menu {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        .tab-button {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6b7280; /* cinza */
+            transition: color 0.15s, border-bottom 0.15s;
+        }
+        .tab-button:hover {
+            color: #2563eb; /* azul */
+        }
+        .tab-active {
+            color: #2563eb; /* azul */
+            border-bottom: 2px solid #2563eb;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="register-card">
+        <div class="text-center mb-4">
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Gelarte Sorveteria Logo" class="gelarte-logo">
+            <h2 class="text-xl font-semibold text-gray-800">Crie sua conta</h2>
+        </div>
+
+        <div class="tab-menu border-b border-gray-200">
+            <a href="{{ url_for('login') }}" class="tab-button mr-6">
+                <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+            </a>
+            
+            <button class="tab-button tab-active">
+                <i class="fas fa-user-plus mr-2"></i> Cadastrar
+            </button>
+        </div>
+        <form id="register-form" onsubmit="event.preventDefault(); handleRegisterSubmit(this);">
+            <div class="mb-4">
+                <label for="username" class="block text-sm font-medium text-gray-700">Nome de Usuário:</label>
+                <input type="text" id="username" name="username" required 
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700">E-mail:</label>
+                <input type="email" id="email" name="email" required 
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-700">Senha:</label>
+                <input type="password" id="password" name="password" required 
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="mb-6">
+                <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirmar Senha:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required 
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            
+            <div class="mb-6">
+                <label for="role" class="block text-sm font-medium text-gray-700">Função:</label>
+                <select id="role" name="role" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="USER">Atendente/Usuário Padrão</option>
+                    <option value="ADMIN">Administrador</option>
+                </select>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-blue-700 transition duration-300">
+                Cadastrar
+            </button>
+        </form>
+
+        <p id="register-message" class="mt-4 text-center text-sm"></p>
+    </div>
+    
+    <script>
+        async function handleRegisterSubmit(form) {
+            const password = form.password.value;
+            const confirm_password = form.confirm_password.value;
+            const messageElement = document.getElementById('register-message');
+            messageElement.textContent = 'Aguarde...';
+            messageElement.className = 'mt-4 text-center text-sm text-gray-500';
+
+            if (password !== confirm_password) {
+                messageElement.textContent = 'Erro: As senhas não coincidem!';
+                messageElement.className = 'mt-4 text-center text-sm text-red-600 font-bold';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: form.username.value,
+                        email: form.email.value,
+                        password: password,
+                        cargo: 'A Definir', // Valores padrão
+                        setor: 'A Definir', // Valores padrão
+                        role: form.role.value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageElement.textContent = data.message;
+                    messageElement.className = 'mt-4 text-center text-sm text-green-600 font-bold';
+                    form.reset(); // Limpa o formulário
+                    // Redireciona para login após o sucesso
+                    setTimeout(() => {
+                        window.location.href = '{{ url_for("login") }}';
+                    }, 1500); 
+                } else {
+                    messageElement.textContent = data.error || 'Erro desconhecido no cadastro.';
+                    messageElement.className = 'mt-4 text-center text-sm text-red-600 font-bold';
+                }
+            } catch (e) {
+                console.error("Erro de conexão:", e);
+                messageElement.textContent = "Erro de conexão com o servidor. Tente novamente.";
+                messageElement.className = 'mt-4 text-center text-sm text-red-600 font-bold';
+            }
+        }
+    </script>
+</body>
+</html>
